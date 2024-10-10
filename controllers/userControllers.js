@@ -150,3 +150,39 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+exports.updateUser = async (req, res) => {
+  const { name, email, password, address, dob, phone } = req.body;
+  try {
+    const exsistingUser = await User.findOne({ email });
+
+    if (!exsistingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User Not Found",
+      });
+    }
+
+    if (name) exsistingUser.name = name;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      exsistingUser.password = hashedPassword;
+    }
+    if (address) exsistingUser.address = address;
+    if (dob) exsistingUser.dob = dob;
+    if (phone) exsistingUser.phone = phone;
+
+    await exsistingUser.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User Updated Successfully",
+      user: exsistingUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      sucecss: false,
+      message: error.message,
+    });
+  }
+};
