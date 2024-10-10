@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const userRoutes = require("./routes/userRoutes");
 const connectdb = require("./config/connectdb");
 
 dotenv.config({
@@ -9,12 +10,17 @@ dotenv.config({
 
 const app = express();
 
+// Middleware to parse JSON
+app.use(express.json());
+
 app.get("/", (req, res) => {
   res.send("Successfull Response");
 });
 
+app.use("/api/user", userRoutes);
+
 connectdb();
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
   console.log(`Server is runnig on port ${process.env.PORT}`);
 });
